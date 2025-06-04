@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #101010;
+  --menu-border: #383838;
+  --menu-active: #2A2A2A;
+  --unit: 8px;
+  --current-stack-height: 0px;
+}
+
+body {
+  background-color: var(--background);
+  color: white;
+  min-height: 100vh;
+} 
