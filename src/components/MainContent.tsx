@@ -17,19 +17,26 @@ export default function MainContent() {
 
       {/* Основная часть */}
       <div className="bg-[#101010] p-8 flex">
-        {/* Левая часть (36%) */}
-        <div className="w-[36%] bg-[#101010]">
-        <div className="max-w-5xl mx-auto">
-          <h1 className="text-2xl font-semibold mb-6">Добро пожаловать в KHL Manager</h1>
-          <div className="space-y-4">
-            <p>Здесь будет основной контент страницы...</p>
-          </div>
-          </div>
-        </div>
-        
-        {/* Правая часть (64%) */}
+        {/* Часть с фоновой картинкой (64%) */}
         <div className="w-[64%] bg-[#101010] relative">
-          <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/background.png)' }}></div>
+          <div 
+            className="sticky bg-cover bg-center bg-no-repeat" 
+            style={{ 
+              backgroundImage: 'url(/background.png)',
+              top: 'var(--current-stack-height, 78px)',
+              height: 'calc(100vh - var(--current-stack-height, 78px))'
+            }}
+          ></div>
+        </div>
+
+        {/* Контентная часть (36%) */}
+        <div className="w-[36%] bg-[#101010]">
+          <div className="max-w-5xl mx-auto">
+            <h1 className="text-2xl font-semibold mb-6">Добро пожаловать в KHL Manager</h1>
+            <div className="space-y-4">
+              <p>Здесь будет основной контент страницы...</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
