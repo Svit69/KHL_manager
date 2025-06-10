@@ -2,10 +2,12 @@
 
 import React, { useState } from 'react';
 import { teams } from '../data/teams';
+import { useTeam } from '@/context/TeamContext';
 
 export default function MainContent() {
   const [isTeamSelection, setIsTeamSelection] = useState(false);
-  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
+  const [localSelectedTeamId, setLocalSelectedTeamId] = useState<string | null>(null);
+  const { selectedTeamId, setSelectedTeamId, isTeamSelected } = useTeam();
 
   return (
     <>
@@ -47,10 +49,11 @@ export default function MainContent() {
         </div>
       </div>
 
-      {/* Оверлей на весь экран */}
-      <div className="welcome-overlay fixed inset-0 z-50 flex items-center justify-center">
+      {/* Оверлей на весь экран - показываем только если команда не выбрана */}
+      {!isTeamSelected && (
+        <div className="welcome-overlay fixed inset-0 z-50 flex items-center justify-center">
         {/* Затемнение фона */}
-        <div className="overlay-backdrop absolute inset-0 bg-[#101010] opacity-50"></div>
+        <div className="overlay-backdrop absolute inset-0 bg-[#101010] opacity-95"></div>
         
         {/* Прямоугольник со скругленными углами */}
         <div className="welcome-modal relative w-[400px] h-[92vh] rounded-2xl bg-[#101010] border border-[#AFAFAF] overflow-hidden">
@@ -97,9 +100,9 @@ export default function MainContent() {
                   {teams.map((team) => (
                     <button
                       key={team.id}
-                      onClick={() => setSelectedTeamId(team.id)}
+                      onClick={() => setLocalSelectedTeamId(team.id)}
                       className={`team-card p-4 rounded-lg border border-[#AFAFAF] transition-colors ${
-                        selectedTeamId === team.id ? 'bg-[#AFAFAF]' : 'bg-[#202020]'
+                        localSelectedTeamId === team.id ? 'bg-[#AFAFAF]' : 'bg-[#202020]'
                       }`}
                     >
                       <img 
@@ -116,17 +119,30 @@ export default function MainContent() {
 
             {/* Кнопки внизу */}
             <div className="modal-actions w-full space-y-4 mb-8">
-              <button 
-                onClick={() => setIsTeamSelection(true)}
-                className="start-button w-full py-3 px-6 bg-[#FFFFFF] text-[#000000] rounded-full text-base font-semibold hover:bg-opacity-90 transition-colors"
+              <button
+                onClick={() => {
+                  if (isTeamSelection && localSelectedTeamId) {
+                    // Выбираем команду и закрываем модал
+                    setSelectedTeamId(localSelectedTeamId);
+                  } else {
+                    // Переходим к выбору команды
+                    setIsTeamSelection(true);
+                  }
+                }}
+                disabled={isTeamSelection && !localSelectedTeamId}
+                className={`start-button w-full py-3 px-6 rounded-full text-base font-semibold transition-colors ${
+                  isTeamSelection && !localSelectedTeamId
+                    ? 'bg-[#666666] text-[#AFAFAF] cursor-not-allowed'
+                    : 'bg-[#FFFFFF] text-[#000000] hover:bg-opacity-90'
+                }`}
               >
                 {isTeamSelection ? 'Выбрать' : 'Начать'}
               </button>
-              <button 
+              <button
                 onClick={() => {
                   if (isTeamSelection) {
                     setIsTeamSelection(false);
-                    setSelectedTeamId(null);
+                    setLocalSelectedTeamId(null);
                   }
                 }}
                 className="load-button w-full py-3 px-6 bg-[#101010] text-[#FFFFFF] border border-[#AFAFAF] rounded-full text-base font-semibold hover:bg-opacity-90 transition-colors"
@@ -136,7 +152,8 @@ export default function MainContent() {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      )}
     </>
   );
 } 
