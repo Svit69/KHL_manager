@@ -17,7 +17,6 @@ interface RosterPlayerListProps {
 }
 
 type FilterType = 'all' | 'forwards' | 'defense' | 'goalies';
-type SortType = 'rating' | 'position' | 'age' | 'name';
 
 const POSITION_FILTERS = [
   { value: 'all', label: 'Все', positions: ['LW', 'C', 'RW', 'D', 'G'] },
@@ -36,7 +35,6 @@ export default function RosterPlayerList({
   lineup = {}
 }: RosterPlayerListProps) {
   const [filter, setFilter] = useState<FilterType>(initialFilter as FilterType);
-  const [sortBy, setSortBy] = useState<SortType>('rating');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Обновляем фильтр при изменении внешнего фильтра
@@ -67,24 +65,11 @@ export default function RosterPlayerList({
       );
     }
 
-    // Сортировка
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'rating':
-          return b.overallRating - a.overallRating;
-        case 'position':
-          return a.position.localeCompare(b.position);
-        case 'age':
-          return PlayerUtils.calculateAge(a.birthDate) - PlayerUtils.calculateAge(b.birthDate);
-        case 'name':
-          return a.lastName.localeCompare(b.lastName);
-        default:
-          return 0;
-      }
-    });
+    // Сортировка по рейтингу (фиксированная)
+    filtered.sort((a, b) => b.overallRating - a.overallRating);
 
     return filtered;
-  }, [players, filter, sortBy, searchQuery]);
+  }, [players, filter, searchQuery]);
 
   const handlePlayerClick = (player: Player) => {
     onPlayerSelect?.(player);
@@ -131,17 +116,7 @@ export default function RosterPlayerList({
           ))}
         </div>
 
-        {/* Сортировка */}
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as SortType)}
-          className="w-full px-3 py-2 bg-[#1A1A1A] border border-[#383838] rounded text-white text-sm focus:border-[#FFFFFF] focus:outline-none mb-3"
-        >
-          <option value="rating">По рейтингу</option>
-          <option value="position">По позиции</option>
-          <option value="age">По возрасту</option>
-          <option value="name">По фамилии</option>
-        </select>
+
       </div>
 
       {/* Поиск */}

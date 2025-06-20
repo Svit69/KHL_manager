@@ -12,6 +12,7 @@ interface LineupFormationProps {
   onLineupChange?: (lineup: LineupState) => void;
   draggedPlayer?: Player | null;
   currentLineup?: LineupState;
+  teamId?: string;
 }
 
 interface LinePosition {
@@ -103,7 +104,8 @@ export default function LineupFormation({
   onPlayerSelect,
   onLineupChange,
   draggedPlayer,
-  currentLineup = {}
+  currentLineup = {},
+  teamId
 }: LineupFormationProps) {
   const [selectedLine, setSelectedLine] = useState<number>(1);
   const [lineup, setLineup] = useState<LineupState>(currentLineup);
@@ -114,7 +116,35 @@ export default function LineupFormation({
   }, [currentLineup]);
 
   const handlePlayerDrop = (player: Player, positionId: string) => {
-    const newLineup = LineupUtils.addPlayerToLineup(lineup, player, positionId);
+    // Проверяем лимит легионеров, если teamId доступен
+    if (teamId) {
+      const canAdd = LineupUtils.canAddPlayerToLineup(lineup, player, teamId, positionId);
+      if (!canAdd.canAdd) {
+        // Показываем push-уведомление
+        if ('Notification' in window) {
+          if (Notification.permission === 'granted') {
+            new Notification('Лимит легионеров', {
+              body: canAdd.reason,
+              icon: '/favicon.ico'
+            });
+          } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(permission => {
+              if (permission === 'granted') {
+                new Notification('Лимит легионеров', {
+                  body: canAdd.reason,
+                  icon: '/favicon.ico'
+                });
+              }
+            });
+          }
+        }
+        // Fallback для браузеров без поддержки уведомлений
+        alert(`❌ ${canAdd.reason}`);
+        return;
+      }
+    }
+
+    const newLineup = LineupUtils.addPlayerToLineup(lineup, player, positionId, teamId);
     setLineup(newLineup);
     onLineupChange?.(newLineup);
     onPlayerSelect?.(player, positionId);
@@ -203,6 +233,8 @@ export default function LineupFormation({
                 onPlayerRemove={handlePlayerRemove}
                 onSlotClick={handleSlotClick}
                 draggedPlayer={draggedPlayer}
+                teamId={teamId}
+                currentLineup={lineup}
               />
               <LineupSlot
                 positionId={`c${selectedLine}`}
@@ -213,6 +245,8 @@ export default function LineupFormation({
                 onPlayerRemove={handlePlayerRemove}
                 onSlotClick={handleSlotClick}
                 draggedPlayer={draggedPlayer}
+                teamId={teamId}
+                currentLineup={lineup}
               />
               <LineupSlot
                 positionId={`rw${selectedLine}`}
@@ -223,6 +257,8 @@ export default function LineupFormation({
                 onPlayerRemove={handlePlayerRemove}
                 onSlotClick={handleSlotClick}
                 draggedPlayer={draggedPlayer}
+                teamId={teamId}
+                currentLineup={lineup}
               />
             </div>
 
@@ -237,6 +273,8 @@ export default function LineupFormation({
                 onPlayerRemove={handlePlayerRemove}
                 onSlotClick={handleSlotClick}
                 draggedPlayer={draggedPlayer}
+                teamId={teamId}
+                currentLineup={lineup}
               />
               <LineupSlot
                 positionId={`rd${selectedLine}`}
@@ -247,6 +285,8 @@ export default function LineupFormation({
                 onPlayerRemove={handlePlayerRemove}
                 onSlotClick={handleSlotClick}
                 draggedPlayer={draggedPlayer}
+                teamId={teamId}
+                currentLineup={lineup}
               />
             </div>
 
@@ -262,6 +302,8 @@ export default function LineupFormation({
                   onPlayerRemove={handlePlayerRemove}
                   onSlotClick={handleSlotClick}
                   draggedPlayer={draggedPlayer}
+                  teamId={teamId}
+                  currentLineup={lineup}
                 />
               </div>
             )}

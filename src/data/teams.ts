@@ -184,5 +184,13 @@ export const teams: Team[] = [
     league: 'KHL',
     city: 'Москва',
     rosterUrl: 'https://www.khl.ru/clubs/cska/'
+  },
+  {
+    id: 'free-agents',
+    name: 'НСА',
+    logo: '/nsa.png',
+    league: 'Free Agents',
+    city: 'Свободные агенты',
+    rosterUrl: ''
   }
-]; 
+];

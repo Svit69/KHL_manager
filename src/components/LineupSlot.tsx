@@ -5,6 +5,7 @@ import { Player } from '@/types/player';
 import { PlayerUtils } from '@/utils/playerUtils';
 import { LineupUtils } from '@/utils/lineupUtils';
 import { PlayerDisplayUtils } from '@/utils/playerDisplayUtils';
+import { LegionnaireUtils } from '@/utils/legionnaireUtils';
 
 interface LineupSlotProps {
   positionId: string;
@@ -15,6 +16,8 @@ interface LineupSlotProps {
   onPlayerRemove?: (positionId: string) => void;
   onSlotClick?: (positionId: string, positionType: string) => void;
   draggedPlayer?: Player | null;
+  teamId?: string;
+  currentLineup?: any;
 }
 
 export default function LineupSlot({
@@ -25,12 +28,21 @@ export default function LineupSlot({
   onPlayerDrop,
   onPlayerRemove,
   onSlotClick,
-  draggedPlayer
+  draggedPlayer,
+  teamId,
+  currentLineup
 }: LineupSlotProps) {
   const [isDragOver, setIsDragOver] = useState(false);
 
   // Проверяем, можно ли поставить перетаскиваемого игрока на эту позицию
-  const canAcceptPlayer = draggedPlayer ? LineupUtils.canPlacePlayer(draggedPlayer, positionType) : false;
+  const canPlaceByPosition = draggedPlayer ? LineupUtils.canPlacePlayer(draggedPlayer, positionType) : false;
+
+  // Проверяем лимит легионеров
+  const canPlaceByLegionnaireLimit = draggedPlayer && teamId && currentLineup
+    ? LineupUtils.canAddPlayerToLineup(currentLineup, draggedPlayer, teamId, positionId).canAdd
+    : true;
+
+  const canAcceptPlayer = canPlaceByPosition && canPlaceByLegionnaireLimit;
   
   // Рассчитываем эффективный рейтинг для перетаскиваемого игрока
   const effectiveRating = draggedPlayer ? LineupUtils.calculateEffectiveRating(draggedPlayer, positionType) : null;
@@ -211,7 +223,13 @@ export default function LineupSlot({
         {/* Сообщение о невозможности размещения */}
         {draggedPlayer && !canAcceptPlayer && (
           <div className="text-xs text-[#FF474A] text-center">
-            Нельзя поставить<br/>{draggedPlayer.position} на {positionType}
+            {!canPlaceByPosition ? (
+              <>Нельзя поставить<br/>{draggedPlayer.position} на {positionType}</>
+            ) : !canPlaceByLegionnaireLimit ? (
+              <>Превышен лимит<br/>легионеров</>
+            ) : (
+              <>Нельзя поставить<br/>игрока</>
+            )}
           </div>
         )}
       </div>

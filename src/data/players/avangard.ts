@@ -488,6 +488,194 @@ const avangardRoster: Player[] = [
     physicalCondition: 100,
     favoriteClubs: ['Авангард'],
     photoUrl: '/players/photos/player-921.png'
+  },
+  {
+    id: 'player-922',
+    firstName: 'Николай',
+    lastName: 'Хворов',
+    position: 'RW',
+    birthDate: '2004-06-24',
+    nationality: 'RU',
+    club: 'Авангард',
+    contract: {
+      endDate: '2026-05-31',
+      type: 'two-way',
+      isActive: true
+    },
+    salary: {
+      amount: 0.7,
+      currency: 'RUB'
+    },
+    overallRating: 60,
+    potential: 76,
+    physicalCondition: 100,
+    favoriteClubs: [],
+    photoUrl: '/players/photos/player-922.png'
+  },
+  {
+    id: 'player-923',
+    firstName: 'Эдуард',
+    lastName: 'Голоднюк',
+    position: 'RW',
+    birthDate: '2005-03-09',
+    nationality: 'RU',
+    club: 'Авангард',
+    contract: {
+      endDate: '2026-05-31',
+      type: 'two-way',
+      isActive: true
+    },
+    salary: {
+      amount: 0.7,
+      currency: 'RUB'
+    },
+    overallRating: 61,
+    potential: 78,
+    physicalCondition: 100,
+    favoriteClubs: [],
+    photoUrl: '/players/photos/player-923.png'
+  },
+
+  // Новые игроки
+  {
+    id: 'player-924',
+    firstName: 'Василий',
+    lastName: 'Пономарев',
+    position: 'C',
+    birthDate: '2002-03-13',
+    nationality: 'RU',
+    club: 'Авангард',
+    contract: {
+      endDate: '2028-05-31',
+      type: 'one-way',
+      isActive: true
+    },
+    salary: {
+      amount: 50,
+      currency: 'RUB'
+    },
+    overallRating: 76,
+    potential: 82,
+    physicalCondition: 100,
+    favoriteClubs: ['Спартак'],
+    photoUrl: '/players/photos/player-924.png'
+  },
+  {
+    id: 'player-925',
+    firstName: 'Сергей',
+    lastName: 'Долгов',
+    position: 'G',
+    birthDate: '2005-02-13',
+    nationality: 'RU',
+    club: 'Авангард',
+    contract: {
+      endDate: '2027-05-31',
+      type: 'two-way',
+      isActive: true
+    },
+    salary: {
+      amount: 0.5,
+      currency: 'RUB'
+    },
+    overallRating: 59,
+    potential: 78,
+    physicalCondition: 100,
+    favoriteClubs: [],
+    photoUrl: '/players/photos/player-925.png'
+  },
+  {
+    id: 'player-926',
+    firstName: 'Егор',
+    lastName: 'Манин',
+    position: 'LW',
+    birthDate: '2000-06-25',
+    nationality: 'RU',
+    club: 'Авангард',
+    contract: {
+      endDate: '2026-05-31',
+      type: 'two-way',
+      isActive: true
+    },
+    salary: {
+      amount: 0.8,
+      currency: 'RUB'
+    },
+    overallRating: 60,
+    potential: 73,
+    physicalCondition: 100,
+    favoriteClubs: [],
+    photoUrl: '/players/photos/player-926.png'
+  },
+  {
+    id: 'player-927',
+    firstName: 'Вячеслав',
+    lastName: 'Малов',
+    position: 'C',
+    birthDate: '2004-06-23',
+    nationality: 'RU',
+    club: 'Авангард',
+    contract: {
+      endDate: '2026-05-31',
+      type: 'two-way',
+      isActive: true
+    },
+    salary: {
+      amount: 0.5,
+      currency: 'RUB'
+    },
+    overallRating: 59,
+    potential: 74,
+    physicalCondition: 100,
+    favoriteClubs: [],
+    photoUrl: '/players/photos/player-927.png'
+  },
+  {
+    id: 'player-928',
+    firstName: 'Дмитрий',
+    lastName: 'Власенко',
+    position: 'RW',
+    birthDate: '2005-05-17',
+    nationality: 'RU',
+    club: 'Авангард',
+    contract: {
+      endDate: '2026-05-31',
+      type: 'two-way',
+      isActive: true
+    },
+    salary: {
+      amount: 0.5,
+      currency: 'RUB'
+    },
+    overallRating: 57,
+    potential: 77,
+    physicalCondition: 100,
+    favoriteClubs: [],
+    photoUrl: '/players/photos/player-928.png'
+  },
+
+  // Волков (переведен из НСА)
+  {
+    id: 'player-421',
+    firstName: 'Александр',
+    lastName: 'Волков',
+    position: 'LW',
+    birthDate: '1997-08-02',
+    nationality: 'RU',
+    club: 'Авангард',
+    contract: {
+      endDate: '2028-05-31',
+      type: 'one-way',
+      isActive: true
+    },
+    salary: {
+      amount: 70,
+      currency: 'RUB'
+    },
+    overallRating: 79,
+    potential: 82,
+    physicalCondition: 100,
+    favoriteClubs: [],
+    photoUrl: '/players/photos/player-421.png'
   }
 ];
 

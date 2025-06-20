@@ -97,7 +97,9 @@ export default function MainContent() {
             {isTeamSelection ? (
               <div className="teams-grid w-full flex-1 mt-8 mb-4 overflow-y-auto">
                 <div className="grid grid-cols-2 gap-4 px-2">
-                  {teams.map((team) => (
+                  {teams
+                    .filter(team => team.id !== 'free-agents') // Исключаем НСА из выбора команд для управления
+                    .map((team) => (
                     <button
                       key={team.id}
                       onClick={() => setLocalSelectedTeamId(team.id)}
@@ -105,8 +107,8 @@ export default function MainContent() {
                         localSelectedTeamId === team.id ? 'bg-[#AFAFAF]' : 'bg-[#202020]'
                       }`}
                     >
-                      <img 
-                        src={team.logo} 
+                      <img
+                        src={team.logo}
                         alt={`${team.name} logo`}
                         className="w-20 h-20 mx-auto mb-2 object-contain"
                       />

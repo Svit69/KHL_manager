@@ -1,4 +1,5 @@
 import { Player } from '@/types/player';
+import { LegionnaireUtils } from './legionnaireUtils';
 
 export interface LineupPosition {
   id: string;
@@ -149,22 +150,51 @@ export class LineupUtils {
    * Добавляет игрока в состав
    */
   static addPlayerToLineup(
-    lineup: LineupState, 
-    player: Player, 
-    positionId: string
+    lineup: LineupState,
+    player: Player,
+    positionId: string,
+    teamId?: string
   ): LineupState {
     const newLineup = { ...lineup };
-    
+
     // Убираем игрока с предыдущей позиции, если он там был
     const currentPosition = this.findPlayerPosition(lineup, player.id);
     if (currentPosition) {
       delete newLineup[currentPosition];
     }
-    
+
     // Ставим игрока на новую позицию
     newLineup[positionId] = player;
-    
+
     return newLineup;
+  }
+
+  /**
+   * Проверяет, можно ли добавить игрока в состав с учетом лимита легионеров
+   */
+  static canAddPlayerToLineup(
+    lineup: LineupState,
+    player: Player,
+    teamId: string,
+    targetPositionId?: string
+  ): { canAdd: boolean; reason?: string } {
+    // Проверяем, есть ли игрок уже в составе
+    const currentPosition = this.findPlayerPosition(lineup, player.id);
+    if (currentPosition) {
+      return { canAdd: true }; // Игрок уже в составе, можно перемещать
+    }
+
+    // Получаем текущих игроков в составе
+    let currentPlayers = Object.values(lineup);
+
+    // Если указана целевая позиция и там уже есть игрок,
+    // исключаем его из подсчета (замена игрока)
+    if (targetPositionId && lineup[targetPositionId]) {
+      currentPlayers = currentPlayers.filter(p => p.id !== lineup[targetPositionId].id);
+    }
+
+    // Проверяем лимит легионеров
+    return LegionnaireUtils.canAddPlayerToLineup(currentPlayers, player, teamId);
   }
 
   /**
@@ -192,29 +222,40 @@ export class LineupUtils {
   /**
    * Получает статистику состава
    */
-  static getLineupStats(lineup: LineupState): {
+  static getLineupStats(lineup: LineupState, teamId?: string): {
     totalPlayers: number;
     goalies: number;
     defensemen: number;
     forwards: number;
     averageRating: number;
+    legionnaires: number;
+    legionnaireGoalies: number;
+    legionnaireStats?: any;
   } {
     const players = Object.values(lineup);
-    
+
     const goalies = players.filter(p => p.position === 'G').length;
     const defensemen = players.filter(p => p.position === 'D').length;
     const forwards = players.filter(p => ['LW', 'C', 'RW'].includes(p.position)).length;
-    
-    const averageRating = players.length > 0 
+
+    const averageRating = players.length > 0
       ? Math.round(players.reduce((sum, p) => sum + p.overallRating, 0) / players.length)
       : 0;
-    
+
+    const legionnaires = LegionnaireUtils.countLegionnaires(players);
+    const legionnaireGoalies = LegionnaireUtils.countLegionnaireGoalies(players);
+
+    const legionnaireStats = teamId ? LegionnaireUtils.getLegionnaireStats(players, teamId) : undefined;
+
     return {
       totalPlayers: players.length,
       goalies,
       defensemen,
       forwards,
-      averageRating
+      averageRating,
+      legionnaires,
+      legionnaireGoalies,
+      legionnaireStats
     };
   }
 }

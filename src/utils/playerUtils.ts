@@ -131,7 +131,7 @@ export class PlayerUtils {
 
   // Получить фото по умолчанию
   static getDefaultPhotoPath(position: PlayerPosition): string {
-    return `/players/photos/default/${position.toLowerCase()}.png`;
+    return `/players/photos/default/player.png`;
   }
 
   // Сортировать игроков по позициям

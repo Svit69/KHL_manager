@@ -11,54 +11,30 @@ interface TeamRosterProps {
   onPlayerSelect?: (player: Player) => void;
 }
 
-type FilterType = 'all' | PlayerPosition;
-type SortType = 'position' | 'rating' | 'age' | 'salary' | 'name';
+
 
 export default function TeamRoster({ players, teamName, onPlayerSelect }: TeamRosterProps) {
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
-  const [filter, setFilter] = useState<FilterType>('all');
-  const [sortBy, setSortBy] = useState<SortType>('position');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Фильтрация и сортировка игроков
-  const filteredAndSortedPlayers = useMemo(() => {
+  // Фильтрация игроков (только поиск по имени)
+  const filteredPlayers = useMemo(() => {
     let result = [...players];
-
-    // Фильтрация по позиции
-    if (filter !== 'all') {
-      result = PlayerUtils.filterPlayersByPosition(result, filter);
-    }
 
     // Поиск по имени
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(player => 
+      result = result.filter(player =>
         player.firstName.toLowerCase().includes(query) ||
         player.lastName.toLowerCase().includes(query)
       );
     }
 
-    // Сортировка
-    switch (sortBy) {
-      case 'position':
-        result = PlayerUtils.sortPlayersByPosition(result);
-        break;
-      case 'rating':
-        result.sort((a, b) => b.overallRating - a.overallRating);
-        break;
-      case 'age':
-        result.sort((a, b) => PlayerUtils.calculateAge(a.birthDate) - PlayerUtils.calculateAge(b.birthDate));
-        break;
-      case 'salary':
-        result.sort((a, b) => b.contract.salaryPerYear - a.contract.salaryPerYear);
-        break;
-      case 'name':
-        result.sort((a, b) => a.lastName.localeCompare(b.lastName));
-        break;
-    }
+    // Сортировка по позиции (фиксированная)
+    result = PlayerUtils.sortPlayersByPosition(result);
 
     return result;
-  }, [players, filter, sortBy, searchQuery]);
+  }, [players, searchQuery]);
 
   // Статистика команды
   const teamStats = useMemo(() => {
@@ -139,40 +115,12 @@ export default function TeamRoster({ players, teamName, onPlayerSelect }: TeamRo
           />
         </div>
 
-        {/* Фильтры и сортировка */}
-        <div className="filters-sort flex flex-wrap gap-4">
-          {/* Фильтр по позиции */}
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value as FilterType)}
-            className="px-3 py-2 bg-[#1A1A1A] border border-[#383838] rounded text-white focus:border-[#FFFFFF] focus:outline-none"
-          >
-            <option value="all">Все позиции</option>
-            <option value="G">Вратари</option>
-            <option value="D">Защитники</option>
-            <option value="LW">Левые крайние</option>
-            <option value="C">Центральные</option>
-            <option value="RW">Правые крайние</option>
-          </select>
 
-          {/* Сортировка */}
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as SortType)}
-            className="px-3 py-2 bg-[#1A1A1A] border border-[#383838] rounded text-white focus:border-[#FFFFFF] focus:outline-none"
-          >
-            <option value="position">По позиции</option>
-            <option value="rating">По рейтингу</option>
-            <option value="age">По возрасту</option>
-            <option value="salary">По зарплате</option>
-            <option value="name">По фамилии</option>
-          </select>
-        </div>
       </div>
 
       {/* Список игроков */}
       <div className="players-grid grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-        {filteredAndSortedPlayers.map((player) => (
+        {filteredPlayers.map((player) => (
           <PlayerCard
             key={player.id}
             player={player}
@@ -183,7 +131,7 @@ export default function TeamRoster({ players, teamName, onPlayerSelect }: TeamRo
       </div>
 
       {/* Сообщение если игроки не найдены */}
-      {filteredAndSortedPlayers.length === 0 && (
+      {filteredPlayers.length === 0 && (
         <div className="no-players text-center py-8">
           <div className="text-[#AFAFAF] text-lg">
             {searchQuery ? 'Игроки не найдены' : 'Нет игроков в команде'}

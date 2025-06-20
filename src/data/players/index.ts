@@ -3,6 +3,15 @@ import akBarsRoster from './ak-bars';
 import avtomobilistRoster from './avtomobilist';
 import salavatYulaevRoster from './salavat-yulaev';
 import avangardRoster from './avangard';
+import dynamoMinskRoster from './dynamo-minsk';
+import skaRoster from './ska';
+import torpedoRoster from './torpedo';
+import metallurgRoster from './metallurg';
+import spartakRoster from './spartak';
+import cskaRoster from './cska';
+import amurRoster from './amur';
+import ladaRoster from './lada';
+import freeAgents from './free-agents';
 
 // Импорт всех ростеров команд
 // В будущем здесь будут импорты всех команд:
@@ -15,6 +24,15 @@ export const allPlayers: Player[] = [
   ...avtomobilistRoster,
   ...salavatYulaevRoster,
   ...avangardRoster,
+  ...dynamoMinskRoster,
+  ...skaRoster,
+  ...torpedoRoster,
+  ...metallurgRoster,
+  ...spartakRoster,
+  ...cskaRoster,
+  ...amurRoster,
+  ...ladaRoster,
+  ...freeAgents,
   // и т.д.
 ];
 
@@ -38,6 +56,51 @@ export const teamRosters: Record<string, TeamRoster> = {
   'avangard': {
     teamId: 'avangard',
     players: avangardRoster,
+    lastUpdated: new Date().toISOString()
+  },
+  'dynamo-mn': {
+    teamId: 'dynamo-mn',
+    players: dynamoMinskRoster,
+    lastUpdated: new Date().toISOString()
+  },
+  'ska': {
+    teamId: 'ska',
+    players: skaRoster,
+    lastUpdated: new Date().toISOString()
+  },
+  'torpedo': {
+    teamId: 'torpedo',
+    players: torpedoRoster,
+    lastUpdated: new Date().toISOString()
+  },
+  'metallurg': {
+    teamId: 'metallurg',
+    players: metallurgRoster,
+    lastUpdated: new Date().toISOString()
+  },
+  'spartak': {
+    teamId: 'spartak',
+    players: spartakRoster,
+    lastUpdated: new Date().toISOString()
+  },
+  'cska': {
+    teamId: 'cska',
+    players: cskaRoster,
+    lastUpdated: new Date().toISOString()
+  },
+  'amur': {
+    teamId: 'amur',
+    players: amurRoster,
+    lastUpdated: new Date().toISOString()
+  },
+  'lada': {
+    teamId: 'lada',
+    players: ladaRoster,
+    lastUpdated: new Date().toISOString()
+  },
+  'free-agents': {
+    teamId: 'free-agents',
+    players: freeAgents,
     lastUpdated: new Date().toISOString()
   },
 };
@@ -100,7 +163,7 @@ export class PlayersDataManager {
 
   // Получить свободных агентов (игроков без активного контракта)
   static getFreeAgents(): Player[] {
-    return allPlayers.filter(player => !player.contract.isActive);
+    return allPlayers.filter(player => !player.contract.isActive || player.club === 'НСА');
   }
 
   // Получить статистику по всем игрокам
@@ -136,10 +199,82 @@ export class PlayersDataManager {
       nationalityCounts
     };
   }
+
+  // Обновить состав команды
+  static updateTeamRoster(teamId: string, newRoster: Player[]): void {
+    if (teamRosters[teamId]) {
+      teamRosters[teamId].players = newRoster;
+      teamRosters[teamId].lastUpdated = new Date().toISOString();
+
+      // Обновляем общий список игроков
+      this.rebuildAllPlayersList();
+    }
+  }
+
+  // Обновить игрока (с перемещением между командами)
+  static updatePlayer(updatedPlayer: Player): void {
+    // Находим старую команду игрока
+    let oldTeamId: string | null = null;
+    for (const [teamId, roster] of Object.entries(teamRosters)) {
+      if (roster.players.find(p => p.id === updatedPlayer.id)) {
+        oldTeamId = teamId;
+        break;
+      }
+    }
+
+    // Удаляем игрока из старой команды
+    if (oldTeamId && teamRosters[oldTeamId]) {
+      teamRosters[oldTeamId].players = teamRosters[oldTeamId].players.filter(p => p.id !== updatedPlayer.id);
+      teamRosters[oldTeamId].lastUpdated = new Date().toISOString();
+    }
+
+    // Добавляем игрока в новую команду
+    const newTeamId = this.getTeamIdByName(updatedPlayer.club);
+    if (newTeamId && teamRosters[newTeamId]) {
+      teamRosters[newTeamId].players.push(updatedPlayer);
+      teamRosters[newTeamId].lastUpdated = new Date().toISOString();
+    }
+
+    // Обновляем общий список игроков
+    this.rebuildAllPlayersList();
+  }
+
+  // Получить ID команды по названию
+  static getTeamIdByName(teamName: string): string | null {
+    const teamNameToId: { [key: string]: string } = {
+      'Ак Барс': 'ak-bars',
+      'Автомобилист': 'avtomobilist',
+      'Салават Юлаев': 'salavat-yulaev',
+      'Авангард': 'avangard',
+      'Динамо Минск': 'dynamo-mn',
+      'СКА': 'ska',
+      'Торпедо': 'torpedo',
+      'Металлург': 'metallurg',
+      'Спартак': 'spartak',
+      'ЦСКА': 'cska',
+      'Амур': 'amur',
+      'Лада': 'lada',
+      'НСА': 'free-agents'
+    };
+
+    return teamNameToId[teamName] || null;
+  }
+
+  // Пересобрать общий список игроков
+  private static rebuildAllPlayersList(): void {
+    const newAllPlayers: Player[] = [];
+    Object.values(teamRosters).forEach(teamData => {
+      newAllPlayers.push(...teamData.players);
+    });
+
+    // Обновляем экспортируемый массив
+    allPlayers.length = 0;
+    allPlayers.push(...newAllPlayers);
+  }
 }
 
 // Экспорт отдельных ростеров для удобства
-export { akBarsRoster, avtomobilistRoster, salavatYulaevRoster, avangardRoster };
+export { akBarsRoster, avtomobilistRoster, salavatYulaevRoster, avangardRoster, dynamoMinskRoster, skaRoster, torpedoRoster, metallurgRoster, spartakRoster, cskaRoster, amurRoster, ladaRoster };
 
 // Экспорт по умолчанию
 export default {

@@ -6,6 +6,7 @@ import { PlayersDataManager } from '@/data/players';
 import { teams } from '@/data/teams';
 import LineupFormation from '@/components/LineupFormation';
 import RosterPlayerList from '@/components/RosterPlayerList';
+
 import { Player } from '@/types/player';
 import { LineupUtils, LineupState } from '@/utils/lineupUtils';
 import { useEffect } from 'react';
@@ -173,6 +174,7 @@ export default function RosterContent() {
               onLineupChange={handleLineupChange}
               draggedPlayer={draggedPlayer}
               currentLineup={lineup}
+              teamId={selectedTeamId}
             />
           </div>
         </div>
